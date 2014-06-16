@@ -1,7 +1,7 @@
 <script type="text/javascript">// <![CDATA[
 if(typeof(_vis_opt_top_initialize) == "function") {
-	goalID = 202;
-	testID = 51;
+	var goalID = 202;
+	var testID = 51;
 	// Code for Custom Goal: Goal #1
 	_vis_opt_goal_conversion(goalID);
 	// uncomment the following line to introduce a half second pause to ensure goal always registers with the server
