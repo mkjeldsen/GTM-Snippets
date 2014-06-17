@@ -7,7 +7,9 @@
 - Makrotype sættes til "Tilpasset javascript".
 - Nedenstående javascript-kode indsættes i kodefeltet:
 ```javascript
-// Denne kode returnerer værdien "true"hvis title-tag'et indeholder "404", og "false" hvis den ikke gør. Tilpas indexOf('unik-streng-fra-din-404-sides-title') efter behov
+// Denne kode returnerer værdien "true"hvis title-tag'et indeholder "404",
+// og "false" hvis den ikke gør.
+// Tilpas indexOf('unik-streng-fra-din-404-sides-title') efter behov
 function () {
 	return (document.title.indexOf('404')!=-1)?'true':'false';
 }
