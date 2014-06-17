@@ -6,9 +6,11 @@
 6. Giv makroen et sigende navn, fx 404 title tag".
 7. Makrotype sættes til "Tilpasset javascript".
 8. Følgende javascript indsættes i kodefeltet:
+```javascript
 function () {
   return (document.title.indexOf('404')!=-1)?'true':'false';
 }
+```
  - Denne kode returnerer værdien "true"hvis title-tag'et indeholder "404", og "false" hvis den ikke gør. Tilpas indexOf('unik-streng-fra-din-404-sides-title') efter behov.
 9. Gem makroen, som ny gerne skulle optræde i dropdownlisten hvor du er i gang med at oprette din regel.
 10. Sæt operatoren i dropdown-listen til "er lig med" og indtast "true" (uden anførselstegn!)
