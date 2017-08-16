@@ -10,5 +10,7 @@ for (var key in p) {
 		console.log(key + " -> " + p[key]['variant']);
 
 		// Do something to the data here...
+		// E.g. Raptor Smart Advisor Buy Event:
+		// rsa.trackEvent("buy",p[key]['id'],p[key]['name'],p[key]['category'],p[key]['price'],"DKK","",p[key]['brand'],"","","");
 	}
 }
