@@ -1,5 +1,5 @@
 function() {
-	var stringToHash == {{zid}}; // set to string you want to hash (e.g. email from link URL)
+	var stringToHash = {{zid}}; // set to string you want to hash (e.g. email from link URL)
     var md5 = function(string) {
 
         function RotateLeft(lValue, iShiftBits) {
