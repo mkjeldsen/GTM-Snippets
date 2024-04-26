@@ -4,54 +4,53 @@
 (function() {
     'use strict';
 
-    var startTime = 10000; // Initial countdown time in milliseconds
-    var endTime; // Variable to store the end time
+    var startTime = 10000; // Initial countdown time in milliseconds, customizable
     var timer; // Variable to store the timeout function
-    var hasStarted = false; // Flag to check if the countdown has started
+    var endTime; // Variable to store the computed end time
 
-    // Function to start or continue the countdown
-    function startCountdown() {
-        if (document.hidden) {
-            // If the document is hidden, do not start the countdown
-            console.log("Tab is inactive, countdown will start when tab becomes active.");
-            return;
-        }
-        hasStarted = true;
-        var currentDate = new Date().getTime(); // Get the current time
-        endTime = currentDate + startTime; // Set the end time based on remaining time
-
-        // Set the timeout to count down
-        timer = setTimeout(function() {
-            var s = parseInt(startTime / 1000);
-            dataLayer.push({'event': s + 'sec_active_time'});
-            startTime = startTime; // Reset the countdown after finishing
-            hasStarted = false; // Reset start flag after countdown finishes
-        }, startTime);
+    function scheduleCountdown() {
+        var remainingTime = endTime - new Date().getTime(); // Calculate remaining time dynamically
+        timer = setTimeout(fireEvent, remainingTime);
     }
 
-    // Function to pause the countdown
-    function pauseCountdown() {
-        if (!hasStarted) {
-            // If the countdown hasn't started yet, no need to pause
-            return;
+    function fireEvent() {
+        try {
+            // Ensure dataLayer exists or initialize it
+            var dataLayer = window.dataLayer = window.dataLayer || [];
+
+            var seconds = parseInt(startTime / 1000);
+            dataLayer.push({'event': seconds + 'sec_active_time'});
+        } catch (e) {
+            console.error("Error in fireEvent:", e.message);
+        } finally {
+            cleanUp(); // Ensure clean up occurs regardless of errors
         }
-        clearTimeout(timer); // Clear the countdown timer
-        var currentDate = new Date().getTime(); // Get the current time
-        startTime = endTime - currentDate; // Calculate the remaining time
     }
 
-    // Event listener to check if the document is visible or hidden
-    document.addEventListener("visibilitychange", function() {
+    function cleanUp() {
+        clearTimeout(timer); // Clear the timeout
+        document.removeEventListener("visibilitychange", handleVisibilityChange);
+    }
+
+    function handleVisibilityChange() {
         if (document.hidden) {
-            pauseCountdown(); // Pause the countdown when the tab is inactive
-//            dataLayer.push({'event':'tab_inactive'});
+            clearTimeout(timer); // Pause countdown
         } else {
-            startCountdown(); // Continue the countdown when the tab is active
-//            dataLayer.push({'event':'tab_active'});
+            if (!timer) {
+                scheduleCountdown(); // Resume countdown only if it was previously paused
+            }
         }
-    });
+    }
 
-    // Check if the tab is initially active and start the countdown accordingly
-    startCountdown();
+    function startCountdown() {
+        try {
+            endTime = new Date().getTime() + startTime; // Compute end time on start
+            scheduleCountdown(); // Schedule the initial countdown
+            document.addEventListener("visibilitychange", handleVisibilityChange);
+        } catch (e) {
+            console.error("Error starting countdown:", e.message);
+        }
+    }
+
+    startCountdown(); // Initial call to start the countdown process
 })();
-</script>
