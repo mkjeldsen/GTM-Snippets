@@ -1,12 +1,13 @@
 // Insert as Custom HTML in GTM. Pushes a "%sec_active_time" to the dataLayer (e.g. "10sec_active_time") when the timer reaches 0.
 // Timer count down time is set in the variable "startTime".
 
-(function() {
+(function () {
     'use strict';
 
     var startTime = 10000; // Initial countdown time in milliseconds, customizable
     var timer; // Variable to store the timeout function
     var endTime; // Variable to store the computed end time
+    var debug_mode = {{Debug Mode}}; // Set this based on your application's requirements or environment
 
     function scheduleCountdown() {
         var remainingTime = endTime - new Date().getTime(); // Calculate remaining time dynamically
@@ -20,6 +21,7 @@
 
             var seconds = parseInt(startTime / 1000);
             dataLayer.push({'event': seconds + 'sec_active_time'});
+            if (debug_mode) {console.log('%c active user','color:green;');}
         } catch (e) {
             console.error("Error in fireEvent:", e.message);
         } finally {
