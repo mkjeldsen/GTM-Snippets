@@ -1,30 +1,36 @@
 window.addEventListener('message', function(event) {
-      console.debug('hs init');
-  setTimeout(function() {
-    if (event.data.type === 'hsFormCallback' && event.data.eventName === 'onFormReady') {
-      window.dataLayer.push({
-        event: 'hubspotFormLoaded',
-        hsFormGuid: event.data.id,
-        currentUrl: window.location.href,
-      });
-    }
+	if (event.data.type === 'hsFormCallback' && event.data.eventName === 'onFormReady') {
+		window.dataLayer.push({
+			event: 'hubspotFormLoaded',
+			hsFormGuid: event.data.id,
+			currentUrl: window.location.href,
+		});
+	}
 
-    if (event.data.type === 'hsFormCallback' && event.data.eventName === 'onFormSubmit') {
-      window.dataLayer.push({
-        event: 'hubspotFormSubmitting',
-        hsFormGuid: event.data.id,
-        currentUrl: window.location.href,
-      });
-    }
+	if (event.data.type === 'hsFormCallback' && event.data.eventName === 'onFormSubmit') {
+		window.dataLayer.push({
+			event: 'hubspotFormSubmitting',
+			hsFormGuid: event.data.id,
+			currentUrl: window.location.href,
+		});
+	}
 
-    if (event.data.type === 'hsFormCallback' && event.data.eventName === 'onFormSubmitted') {
-      window.dataLayer.push({
-        event: 'hubspotFormSubmitted',
-        hs_form_guid: event.data.id,                              // logs the form unique identifier
-        hs_form_conversionid : event.data.data.conversionId,      // logs the form submit id (unique for the specific form submit)
-        hs_form_url: window.location.href,                        // logs the current url the form is submitted from
-      });
-    }
-  }, 2000); // Delay set to 2000 milliseconds
-  console.debug('hs ready');
+	if (event.data.type === 'hsFormCallback' && event.data.eventName === 'onFormSubmitted') {
+		window.dataLayer.push({
+			event: 'hubspot-form-success',
+			hs_form_name: {{ dlv - hs_form_name_api }},
+			hs_form_guid: event.data.id,
+			hs_form_conversionid: event.data.data.conversionId,
+			hs_form_firstname: event.data.data.submissionValues.firstname,
+			hs_form_lastname: event.data.data.submissionValues.lastname,
+			hs_form_email: event.data.data.submissionValues.email,
+			hs_form_phone: event.data.data.submissionValues.phone,
+			hs_form_company: event.data.data.submissionValues.company,
+			hs_form_url: window.location.href,
+//			hs_form_dataset: event.data,
+//			hs_form_fields: event.data.data,
+//			hs_form_fields_sv: event.data.data.submissionValues,
+		});
+	}
+	console.debug('hs ready');
 });
