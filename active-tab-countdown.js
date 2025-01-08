@@ -1,58 +1,52 @@
 // Insert as Custom HTML in GTM. Pushes a "%sec_active_time" to the dataLayer (e.g. "10sec_active_time") when the timer reaches 0.
 // Timer count down time is set in the variable "startTime".
 
-(function () {
-    'use strict';
+(function() {
+    var sessionActiveTime = parseInt(sessionStorage.getItem('sessionActiveTime'), 10) || 0;
+    var sessionTimeExceeded = sessionStorage.getItem('45sec_active_time') === 'true';
+    var highIntentUser = sessionStorage.getItem('high_intent_user') === 'true';
+    var heavyBrowser = sessionStorage.getItem('heavy_browser') === 'true';
+    var lastActiveTime = new Date().getTime();
 
-    var startTime = 10000; // Initial countdown time in milliseconds, customizable
-    var timer; // Variable to store the timeout function
-    var endTime; // Variable to store the computed end time
-    var debug_mode = {{Debug Mode}}; // Set this based on your application's requirements or environment
+    // Function to check and update the session active time
+    var updateSessionActiveTime = function() {
+        if (document.visibilityState === 'visible') {
+            var currentTime = new Date().getTime();
+            var elapsedTime = (currentTime - lastActiveTime) / 1000; // convert to seconds
 
-    function scheduleCountdown() {
-        var remainingTime = endTime - new Date().getTime(); // Calculate remaining time dynamically
-        timer = setTimeout(fireEvent, remainingTime);
-    }
+            sessionActiveTime += elapsedTime;
+            sessionStorage.setItem('sessionActiveTime', sessionActiveTime);
+            lastActiveTime = currentTime;
 
-    function fireEvent() {
-        try {
-            // Ensure dataLayer exists or initialize it
-            var dataLayer = window.dataLayer = window.dataLayer || [];
-
-            var seconds = parseInt(startTime / 1000);
-            dataLayer.push({'event': seconds + 'sec_active_time'});
-            if (debug_mode) {console.log('%c active user','color:green;');}
-        } catch (e) {
-            console.error("Error in fireEvent:", e.message);
-        } finally {
-            cleanUp(); // Ensure clean up occurs regardless of errors
-        }
-    }
-
-    function cleanUp() {
-        clearTimeout(timer); // Clear the timeout
-        document.removeEventListener("visibilitychange", handleVisibilityChange);
-    }
-
-    function handleVisibilityChange() {
-        if (document.hidden) {
-            clearTimeout(timer); // Pause countdown
-        } else {
-            if (!timer) {
-                scheduleCountdown(); // Resume countdown only if it was previously paused
+            if (sessionActiveTime >= 45) {
+                sessionStorage.setItem('45sec_active_time', 'true');
+                dataLayer.push({'event': '45sec_active_time'});
+                if (highIntentUser && heavyBrowser !== 'true') {
+                  dataLayer.push({'event': 'heavy_browser'});
+                  sessionStorage.setItem('heavy_browser', 'true');
+                }
+                clearInterval(timer); // Stop the timer
+//                console.debug('Session active time exceeded 45 seconds.');
+            } else {
+//                console.debug('Session active time: ' + sessionActiveTime + ' seconds.');
             }
+        } else {
+            lastActiveTime = new Date().getTime(); // Update last active time when the tab becomes inactive
         }
-    }
+    };
 
-    function startCountdown() {
-        try {
-            endTime = new Date().getTime() + startTime; // Compute end time on start
-            scheduleCountdown(); // Schedule the initial countdown
-            document.addEventListener("visibilitychange", handleVisibilityChange);
-        } catch (e) {
-            console.error("Error starting countdown:", e.message);
+    // Event listener to detect tab visibility changes (active/inactive)
+    document.addEventListener('visibilitychange', function() {
+        if (document.visibilityState === 'visible') {
+            lastActiveTime = new Date().getTime();
         }
-    }
+    });
 
-    startCountdown(); // Initial call to start the countdown process
+    // Run the update every second
+    var timer = setInterval(updateSessionActiveTime, 1000);
+
+    // If session time has already exceeded 45 seconds, clear the interval immediately
+    if (sessionTimeExceeded) {
+        clearInterval(timer);
+    }
 })();
