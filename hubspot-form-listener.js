@@ -1,7 +1,7 @@
 window.addEventListener('message', function(event) {
 	if (event.data.type === 'hsFormCallback' && event.data.eventName === 'onFormReady') {
 		window.dataLayer.push({
-			event: 'hubspotFormLoaded',
+			event: 'hubspot-form-loaded',
 			hsFormGuid: event.data.id,
 			currentUrl: window.location.href,
 		});
@@ -9,7 +9,7 @@ window.addEventListener('message', function(event) {
 
 	if (event.data.type === 'hsFormCallback' && event.data.eventName === 'onFormSubmit') {
 		window.dataLayer.push({
-			event: 'hubspotFormSubmitting',
+			event: 'hubspot-form-submitting',
 			hsFormGuid: event.data.id,
 			currentUrl: window.location.href,
 		});
@@ -18,7 +18,7 @@ window.addEventListener('message', function(event) {
 	if (event.data.type === 'hsFormCallback' && event.data.eventName === 'onFormSubmitted') {
 		window.dataLayer.push({
 			event: 'hubspot-form-success',
-			hs_form_name: {{ dlv - hs_form_name_api }},
+			hs_form_name: {{dlv - hs_form_name_api}},
 			hs_form_guid: event.data.id,
 			hs_form_conversionid: event.data.data.conversionId,
 			hs_form_firstname: event.data.data.submissionValues.firstname,
